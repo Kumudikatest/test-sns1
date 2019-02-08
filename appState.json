@@ -1,0 +1,404 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "c12fe076-d1a1-4b73-bd67-e8027ac6cd6e": {
+        "id": "c12fe076-d1a1-4b73-bd67-e8027ac6cd6e",
+        "parent": null,
+        "name": "TestSNS",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "c4157b02-a62d-4492-8073-17a0552a12af"
+        ],
+        "isRemovable": false,
+        "filePath": "TestSNS"
+      },
+      "c4157b02-a62d-4492-8073-17a0552a12af": {
+        "id": "c4157b02-a62d-4492-8073-17a0552a12af",
+        "parent": "c12fe076-d1a1-4b73-bd67-e8027ac6cd6e",
+        "name": "SNS.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "TestSNS/SNS.js",
+        "code": "let AWS = require('aws-sdk');\nconst cognito_idp = new AWS.CognitoIdentityServiceProvider();\nconst sns = new AWS.SNS();\n\nexports.handler = function (event, context, callback) {\n\n\tlet receiver = event['receiver'];\n\tlet sender = event['sender'];\n\tlet message = event['message'];\n\n\tlet isPromotional = true;\n\n\tconsole.log(\"Sending message\", message, \"to receiver\", receiver);\n\n\tsns.publish({\n\t\tMessage: message,\n\t\tMessageAttributes: {\n\t\t\t'AWS.SNS.SMS.SMSType': {\n\t\t\t\tDataType: 'String',\n\t\t\t\tStringValue: 'Promotional'\n\t\t\t},\n\t\t\t'AWS.SNS.SMS.SenderID': {\n\t\t\t\tDataType: 'String',\n\t\t\t\tStringValue: sender\n\t\t\t},\n\t\t},\n\t\tPhoneNumber: receiver\n\t}).promise()\n\t\t.then(data => {\n\t\t\tconsole.log(\"Sent message to\", receiver);\n\t\t\tcallback(null, data);\n\t\t})\n\t\t.catch(err => {\n\t\t\tconsole.log(\"Sending failed\", err);\n\t\t\tcallback(err);\n\t\t});\n\tcognito_idp.listUsers({\n\t\tUserPoolId: \"us-east-1_D10y3fy0o\",\n\t\tLimit: \"10\"\n\t}, function (error, data) {\n\t\tif (error) {\n\t\t\t// implement error handling logic here\n\t\t\tthrow error;\n\t\t}\n\t\t// your logic goes within this block\n\t});\n\tsns.listSubscriptionsByTopic({\n\t\tTopicArn: 'arn:aws:sns:us-east-1:318300609668:dynamodb'\n\t}).promise()\n\t\t.then(data => {\n\t\t\t// your code goes here\n\t\t})\n\t\t.catch(err => {\n\t\t\t// error handling goes here\n\t\t});\n\n\n\n\tcallback(null, 'Successfully executed');\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1KTestSNSTestSNSpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "memory": 128,
+          "timeout": 60,
+          "runtime": "nodejs8.10"
+        },
+        "testCases": {
+          "0747fa08-a878-4726-861d-b0be87e2115d": {
+            "id": "0747fa08-a878-4726-861d-b0be87e2115d",
+            "name": "TestSNS",
+            "functionId": "c4157b02-a62d-4492-8073-17a0552a12af",
+            "event": "{\n \"receiver\": \"+940772445224\",\n \"sender\": \"MySMS\",\n \"message\": \"Hello there! How are you doing?\"\n}"
+          }
+        }
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "c12fe076-d1a1-4b73-bd67-e8027ac6cd6e",
+    "openFiles": [
+      "c4157b02-a62d-4492-8073-17a0552a12af"
+    ],
+    "currentFileId": "c4157b02-a62d-4492-8073-17a0552a12af",
+    "resources": {
+      "apigusEast1KTestSNSTestSNSpost": {
+        "name": "apigusEast1KTestSNSTestSNSpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "KTestSNS",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "TestSNS",
+          "resourcePath": "/TestSNS",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": true,
+          "stageMode": 0,
+          "stageName": "test"
+        },
+        "globallyEditable": true
+      },
+      "snsDirectSMSResource": {
+        "name": "snsDirectSMSResource",
+        "type": "SNS",
+        "config": {
+          "snsType": 1,
+          "numbers": [
+            "@{receiver}"
+          ]
+        },
+        "globallyEditable": false
+      },
+      "cognitotest": {
+        "name": "cognitotest",
+        "type": "CognitoIdentityServiceProvider",
+        "config": {
+          "mode": 1,
+          "name": "test",
+          "arn": "arn:aws:cognito-idp:us-east-1:318300609668:userpool/us-east-1_D10y3fy0o",
+          "userPool": {
+            "Id": "us-east-1_D10y3fy0o",
+            "Name": "test",
+            "LambdaConfig": {},
+            "Policies": {
+              "PasswordPolicy": {
+                "MinimumLength": 8,
+                "RequireUppercase": true,
+                "RequireLowercase": true,
+                "RequireNumbers": true,
+                "RequireSymbols": true
+              }
+            },
+            "AutoVerifiedAttributes": [
+              "email"
+            ],
+            "SmsVerificationMessage": "Your verification code is {####}. ",
+            "EmailVerificationMessage": "Your verification code is {####}. ",
+            "EmailVerificationSubject": "Your verification code",
+            "VerificationMessageTemplate": {
+              "SmsMessage": "Your verification code is {####}. ",
+              "EmailMessage": "Your verification code is {####}. ",
+              "EmailSubject": "Your verification code",
+              "DefaultEmailOption": "CONFIRM_WITH_CODE"
+            },
+            "SmsAuthenticationMessage": "Your authentication code is {####}. ",
+            "MfaConfiguration": "OFF",
+            "EmailConfiguration": {},
+            "UserPoolTags": {},
+            "AdminCreateUserConfig": {
+              "AllowAdminCreateUserOnly": false,
+              "UnusedAccountValidityDays": 7,
+              "InviteMessageTemplate": {
+                "SMSMessage": "Your username is {username} and temporary password is {####}. ",
+                "EmailMessage": "Your username is {username} and temporary password is {####}. ",
+                "EmailSubject": "Your temporary password"
+              }
+            },
+            "SchemaAttributes": [
+              {
+                "Name": "sub",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": false,
+                "Required": true,
+                "StringAttributeConstraints": {
+                  "MinLength": "1",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "name",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "given_name",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "family_name",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "middle_name",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "nickname",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "preferred_username",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "profile",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "picture",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "website",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "email",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": true,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "email_verified",
+                "AttributeDataType": "Boolean",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false
+              },
+              {
+                "Name": "gender",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "birthdate",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "10",
+                  "MaxLength": "10"
+                }
+              },
+              {
+                "Name": "zoneinfo",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "locale",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "phone_number",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "phone_number_verified",
+                "AttributeDataType": "Boolean",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false
+              },
+              {
+                "Name": "address",
+                "AttributeDataType": "String",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "StringAttributeConstraints": {
+                  "MinLength": "0",
+                  "MaxLength": "2048"
+                }
+              },
+              {
+                "Name": "updated_at",
+                "AttributeDataType": "Number",
+                "DeveloperOnlyAttribute": false,
+                "Mutable": true,
+                "Required": false,
+                "NumberAttributeConstraints": {
+                  "MinValue": "0"
+                }
+              }
+            ]
+          }
+        },
+        "globallyEditable": false
+      },
+      "snsusEast1dynamodb": {
+        "name": "snsusEast1dynamodb",
+        "type": "SNS",
+        "config": {
+          "topicMode": 1,
+          "topicName": "dynamodb",
+          "topicArn": "arn:aws:sns:us-east-1:318300609668:dynamodb",
+          "topicRegion": "us-east-1",
+          "snsType": 0,
+          "subscriptions": []
+        },
+        "globallyEditable": true
+      }
+    },
+    "customTemplate": {
+      "dialect": null,
+      "definitions": {}
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "editable": false,
+        "isEditable": false,
+        "shouldPersist": false,
+        "displayOnly": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {
+        "aws-sdk": {
+          "name": "aws-sdk",
+          "version": "2.176.0",
+          "dev": true,
+          "notRemovable": false
+        }
+      }
+    },
+    "lambdaId": "c4157b02-a62d-4492-8073-17a0552a12af",
+    "additionalFiles": []
+  },
+  "PROJECT_META": {
+    "projectName": "TestSNS",
+    "projectDescription": "SNS as a resource",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1549607170634
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "TestSNS",
+      "url": "https://github.com/Kumudikatest/test-sns1"
+    }
+  }
+}
